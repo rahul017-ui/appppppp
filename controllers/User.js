@@ -13,10 +13,7 @@ const getusers = async (req, res) => {
     let ids = users.map((obj) => {
 
       return obj._id
-
-
     });
-
 
     let tasks = await todotask.find({ user_id: { $in: ids } });
 
