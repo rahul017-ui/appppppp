@@ -1,8 +1,9 @@
-const todotask = require("../model/task");
+const { todotask, valid } = require("../model/task");
 const _ = require('lodash');
 const bcrypt = require('bcrypt');
 const { User, validate } = require('../model/user');
 const Joi = require('joi');
+const { toLower } = require("lodash");
 
 
 
@@ -40,13 +41,29 @@ const getusers = async (req, res) => {
   }
 };
 
+
+const getstatus = async (req, res) => {
+
+  try {
+    let userstatus = await User.findById(req.params.userId);
+    if (userstatus) return res.status(200).send('User is Active');
+
+  } catch (error) {
+    res.json({ message: "User is Not Active" });
+  }
+};
+
 const getuser = async (req, res) => {
 
-  const user = await User.findById(req.user._id).select('-password');
-  const task = await todotask.findOne({ user_id: req.user._id });
+  const user = await User.findById(req.params.id).select('-password');
+  const task = await todotask.findOne({ user_id: req.params.id });
   const userData = { "user": user, "task": task };
   res.json(userData);
 };
+
+
+
+
 const getusertask = async (req, res) => {
 
   try {
@@ -123,7 +140,7 @@ const userupdate = async (req, res) => {
     );
     if (!updateduser) return res.status(404).send('The user with the given ID was not found.');
 
-    res.json("update", user);
+    res.send(user);
   } catch (error) {
     res.json({ message: error });
   }
@@ -137,6 +154,10 @@ const deleteuser = async (req, res) => {
     const removeuser = await User.findByIdAndDelete(req.params.userId);
     const task = await todotask.findOneAndDelete({ user_id: req.params.userId });
     const userDelete = { "user": removeuser, "task": task };
+
+    if (!removeuser) return res.status(404).send('The user with the given ID was not found.');
+
+
     res.json(userDelete);
   } catch (error) {
     res.json({ message: error });
@@ -150,5 +171,6 @@ module.exports = {
   userupdate,
   deleteuser,
   getusertask,
-  getusers
+  getusers,
+  getstatus
 }

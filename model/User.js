@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const Joi = require('joi');
-const jwt =require('jsonwebtoken');
-const config=require('config');
+const jwt = require('jsonwebtoken');
+const config = require('config');
 
 
 
@@ -18,7 +18,9 @@ const userSchema = new mongoose.Schema({
     required: true,
     minlength: 5,
     maxlength: 50,
-    unique: true
+    unique: true,
+    lowercase: true
+
   },
   contact: {
     type: Number,
@@ -38,20 +40,19 @@ const userSchema = new mongoose.Schema({
   timestamps: true
 });
 
-userSchema.methods.generateAuthToken =function(){
-  const token = jwt.sign({_id: this._id},config.get('jwtPrivateKey'));
+userSchema.methods.generateAuthToken = function () {
+  const token = jwt.sign({ _id: this._id }, config.get('jwtPrivateKey'));
   return token;
 }
 
-const User = mongoose.model('User',userSchema);
-
+const User = mongoose.model('User', userSchema);
 
 function validateUser(user) {
   const schema = {
     name: Joi.string().min(5).max(50).required(),
     email: Joi.string().min(5).max(255).required().email(),
-    contact:Joi.number().min(5).required(),
-    username:Joi.string().min(5).max(255).required(),
+    contact: Joi.number().min(5).required(),
+    username: Joi.string().min(5).max(255).required(),
     password: Joi.string().min(5).max(255).required()
   };
 
@@ -60,9 +61,6 @@ function validateUser(user) {
 
 
 
-
-
-
-exports.User = User; 
+exports.User = User;
 
 exports.validate = validateUser;
