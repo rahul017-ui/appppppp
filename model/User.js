@@ -20,7 +20,6 @@ const userSchema = new mongoose.Schema({
     maxlength: 50,
     unique: true,
     lowercase: true
-
   },
   contact: {
     type: Number,
@@ -62,5 +61,4 @@ function validateUser(user) {
 
 
 exports.User = User;
-
 exports.validate = validateUser;

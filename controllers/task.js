@@ -1,4 +1,4 @@
-const {todotask, valid} = require("../model/task");
+const { todotask, validate } = require("../model/task");
 const _ = require('lodash');
 
 
@@ -23,35 +23,21 @@ const gettask = async (req, res) => {
   }
 };
 
-// Add New task
-// const createtask = async (req, res) => {
-
-//   try {
-//     const task = new todotask({
-//       user_id: req.body.user_id,
-//       pincode: req.body.pincode,
-//       task: req.body.task
-//     });
-//     console.log(req.body);
-//     const savedtask = await task.save();
-//     res.send(savedtask);
-//   } catch (error) {
-//     res.status(400).send(error);
-//   }
-// };
-
-
-
 
 const createtask = async (req, res) => {
-  const { error } = valid(req.body);
-  if (error) return res.status(400).send(error.details[0].message);
+  try {
+    const { error } = validate(req.body);
+    if (error) return res.status(400).send(error.details[0].message);
 
-  user = new todotask(_.pick(req.body, ['user_id','pincode','task']));
+    user = new todotask(_.pick(req.body, ['user_id', 'pincode', 'task']));
 
-  await user.save();
-  res.json(user)
+    await user.save();
+    res.json(user)
 
+  } catch (error) {
+    res.json({ message: error })
+
+  }
 };
 
 

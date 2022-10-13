@@ -1,9 +1,8 @@
-const { todotask, valid } = require("../model/task");
+const { todotask } = require("../model/task");
 const _ = require('lodash');
 const bcrypt = require('bcrypt');
 const { User, validate } = require('../model/user');
 const Joi = require('joi');
-const { toLower } = require("lodash");
 
 
 
@@ -79,7 +78,8 @@ const getusertask = async (req, res) => {
 };
 
 const createuser = async (req, res) => {
-  const { error } = validate(req.body);
+  try{
+    const { error } = validate(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
   let user = await User.findOne({ email: req.body.email });
@@ -93,11 +93,15 @@ const createuser = async (req, res) => {
   const token = user.generateAuthToken();
   res.header('x-auth-token', token).send(_.pick(user, ['_id', 'name', 'email']));
 
-};
+}catch (error) {
+  res.json({ message: error });
+}
+  }
 
 //login user  
 
 const login = async (req, res) => {
+try{
   const { error } = validatelogin(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
@@ -111,6 +115,9 @@ const login = async (req, res) => {
 
 
   res.send("user logined successfully");
+}catch (error) {
+  res.json({ message: error });
+}
 };
 
 function validatelogin(req) {
